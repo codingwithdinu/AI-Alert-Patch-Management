@@ -15,9 +15,7 @@ export default function App() {
   }
 
 useEffect(() => {
-  fetch("http://127.0.0.1:8000/patches")
-    .then(res => res.json())
-    .then(data => setPatches(data));
+  refresh();
 }, []);
 
 
