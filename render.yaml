@@ -1,0 +1,32 @@
+# render.yaml — Render.com deployment config for the FastAPI backend
+# Docs: https://render.com/docs/infrastructure-as-code
+
+services:
+  - type: web
+    name: ai-patch-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./data/patches.db
+      - key: DEBUG
+        value: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: ALERT_FROM_EMAIL
+        sync: false
+      - key: ALERT_TO_EMAIL
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
