@@ -1,13 +1,25 @@
+version: "3.9"
+
 services:
-  api:
-    build: .
-    ports: ["8000:8000"]
-    volumes: ["./backend:/app"]
-  web:
-    image: node:20
-    working_dir: /app
-    command: sh -c "npm install && npm run start"
-    ports: ["3000:3000"]
-    volumes: ["./frontend:/app"]
+  backend:
+    build: ./backend
+    container_name: ai_patch_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./ml:/app/ml
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: ai_patch_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
     environment:
-      - VITE_API=http://localhost:8000
+      - VITE_API_URL=http://localhost:8000
+    restart: unless-stopped
