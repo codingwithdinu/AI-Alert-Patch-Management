@@ -1,13 +1,21 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+from app.config import get_settings
 
-DATABASE_URL = "sqlite:///./data.db"
+settings = get_settings()
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+os.makedirs("data", exist_ok=True)
 
-class Base(DeclarativeBase):
-    pass
+engine = create_engine(
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
@@ -17,5 +25,5 @@ def get_db():
         db.close()
 
 def init_db():
-    from .models.db_models import Alert, Patch  # noqa: F401
+    from app.models import patch, alert_rule, alert_log
     Base.metadata.create_all(bind=engine)
